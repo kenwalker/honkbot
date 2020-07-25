@@ -49,14 +49,15 @@ client.on("message", async message => {
     }
     totalMessages++;
     var voiceChannel = message.member.voice.channel;
-    console.log("VoiceChannel " + voiceChannel);
-    voiceChannel.join().then(function(connection) {
-        var randomHonk = Math.floor(Math.random() * Math.floor(honkSounds.length));
-        const dispatcher = connection.play(honkSounds[randomHonk]);
-        dispatcher.on("end", end => {
-            voiceChannel.leave();
-        });
-    }).catch(err => console.log(err));
+    if (voiceChannel) {
+        voiceChannel.join().then(function(connection) {
+            var randomHonk = Math.floor(Math.random() * Math.floor(honkSounds.length));
+            const dispatcher = connection.play(honkSounds[randomHonk]);
+            dispatcher.on("end", end => {
+                voiceChannel.leave();
+            });
+        }).catch(err => console.log(err));
+    }
 });
 
 

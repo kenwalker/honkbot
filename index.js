@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const https = require('https');
 var totalMessages = 0;
-var honkSounds = [ "honk1.mp3", "honk2.mp3", "honk3.mp3" ];
+var honkSounds = [ "honk1.mp3", "honk2.mp3", "honk3.mp3", "honk4.mp3" ];
 
 const client = new Discord.Client();
 
@@ -11,17 +11,17 @@ const config = require("./config.json");
 // config.app contains the app name that is triggered after the prefix.
 
 client.on("ready", () => {
-    client.user.setActivity('!' + config.app + ' help (' + client.guilds.cache.size + ' servers)');
+    client.user.setActivity('!' + config.app + ' (' + client.guilds.cache.size + ' servers)');
     console.log("Ready");
 });
 
 client.on("guildCreate", guild => {
-    client.user.setActivity('!' + config.app + ' help (' + client.guilds.cache.size + ' servers)');
+    client.user.setActivity('!' + config.app + ' (' + client.guilds.cache.size + ' servers)');
 });
 
 //removed from a server
 client.on("guildDelete", guild => {
-    client.user.setActivity('!' + config.app + ' help (' + client.guilds.cache.size + ' servers)');
+    client.user.setActivity('!' + config.app + ' (' + client.guilds.cache.size + ' servers)');
 });
 
 client.on("message", async message => {
@@ -48,6 +48,7 @@ client.on("message", async message => {
         return;
     }
     totalMessages++;
+    message.delete({ timeout: 0 });
     var voiceChannel = message.member.voice.channel;
     if (voiceChannel) {
         voiceChannel.join().then(function(connection) {
@@ -57,6 +58,10 @@ client.on("message", async message => {
                 voiceChannel.leave();
             });
         }).catch(err => console.log(err));
+    } else {
+        message.reply("You are not on an active voice channel, HONK amongst yourself").then(function (reply) {
+            if (!reply.deleted) { reply.delete({ timeout: 4000 }); }
+        });
     }
 });
 

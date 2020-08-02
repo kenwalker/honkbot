@@ -51,6 +51,12 @@ client.on("message", async message => {
     message.delete({ timeout: 0 });
     var voiceChannel = message.member.voice.channel;
     if (voiceChannel) {
+        if (voiceChannel.name.toLowerCase().indexOf("quiet") !== -1) {
+            message.reply("No HONKING in quiet channels!").then(function (reply) {
+                if (!reply.deleted) { reply.delete({ timeout: 4000 }); }
+            });
+            return;
+        }
         voiceChannel.join().then(function(connection) {
             var randomHonk = Math.floor(Math.random() * Math.floor(honkSounds.length));
             const dispatcher = connection.play(honkSounds[randomHonk]);

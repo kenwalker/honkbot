@@ -59,15 +59,22 @@ client.on("message", async message => {
             return;
         }
         if (!lastHonks[voiceChannel.name]) {
-            lastHonks[voiceChannel.name] = 0;
+            lastHonks[voiceChannel.name] = -3;
         }
-        if (Date.now() - lastHonks[voiceChannel.name] < (60 * 1000 * 3)) {
+        if (lastHonks[voiceChannel.name] > 0 && (Date.now() - lastHonks[voiceChannel.name] < (60 * 1000 * 2))) {
             message.reply("Recent honk in " + voiceChannel.name + ", the geese are sleeping...").then(function (reply) {
                 if (!reply.deleted) { reply.delete({ timeout: 4000 }); }
             });
             return;
         }
-        lastHonks[voiceChannel.name] = Date.now();
+        if (lastHonks[voiceChannel.name] > 0 && (Date.now() - lastHonks[voiceChannel.name] > (60 * 1000 * 2))) {
+            lastHonks[voiceChannel.name] = -3;
+        }
+
+        lastHonks[voiceChannel.name]++;
+        if (lastHonks[voiceChannel.name] === 0) {
+            lastHonks[voiceChannel.name] = Date.now();
+        }
         voiceChannel.join().then(function(connection) {
             var randomHonk = Math.floor(Math.random() * Math.floor(honkSounds.length));
             const dispatcher = connection.play(honkSounds[randomHonk]);

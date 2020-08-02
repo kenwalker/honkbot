@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const https = require('https');
 var totalMessages = 0;
 var honkSounds = [ "honk1.mp3", "honk2.mp3", "honk3.mp3", "honk4.mp3", "honk5.m4a" ];
+var lastHonks = {};
 
 const client = new Discord.Client();
 
@@ -57,6 +58,16 @@ client.on("message", async message => {
             });
             return;
         }
+        if (!lastHonks[voiceChannel.name]) {
+            lastHonks[voiceChannel.name] = 0;
+        }
+        if (Date.now() - lastHonks[voiceChannel.name] < (60 * 1000 * 3)) {
+            message.reply("Recent honk in " + voiceChannel.name + ", the geese are sleeping...").then(function (reply) {
+                if (!reply.deleted) { reply.delete({ timeout: 4000 }); }
+            });
+            return;
+        }
+        lastHonks[voiceChannel.name] = Date.now();
         voiceChannel.join().then(function(connection) {
             var randomHonk = Math.floor(Math.random() * Math.floor(honkSounds.length));
             const dispatcher = connection.play(honkSounds[randomHonk]);
